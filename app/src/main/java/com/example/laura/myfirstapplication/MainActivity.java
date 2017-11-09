@@ -5,11 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
     List<Movie> movies = new ArrayList<>();
     ListView listView;
     MovieListAdapter movieListAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                intent.putExtra("movie_name", movies.get(position).getName());
+                intent.putExtra("movie", movies.get(position));
                 intent.putExtra("position", position);
                 startActivityForResult(intent, REQUEST_CODE);
             }
@@ -42,12 +44,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeMovieList() {
-        List<CustomGenres> genres = new ArrayList<>();
-        genres.add(CustomGenres.HORROR);
-        movies.add(new Movie("IT", 2017, genres, R.drawable.itmoviethumbnail));
-        genres.remove(0);
-        genres.add(CustomGenres.ANIMATION);
-        movies.add(new Movie("Moana", 2017, genres, R.drawable.moanamoviethumbnail));
+        movies.add(new Movie("IT", 2017, Collections.singletonList(CustomGenres.HORROR), R.drawable.itmoviethumbnail));
+        movies.add(new Movie("Moana", 2017, Arrays.asList(CustomGenres.ANIMATION, CustomGenres.FAMILY), R.drawable.moanamoviethumbnail));
 
     }
 
@@ -58,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==REQUEST_CODE){
             if(resultCode==RESULT_OK){
 
-                Movie m = (Movie) data.getSerializableExtra("resultProduct");
+                Movie m = (Movie) data.getSerializableExtra("resultMovie");
                 Integer pos = (Integer) data.getSerializableExtra("resultPosition");
                 movies.set(pos, m);
 
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent= new Intent(MainActivity.this, DetailsActivity.class);
-                        intent.putExtra("movie_name",movies.get(position).getName());
+                        intent.putExtra("movie",movies.get(position));
                         intent.putExtra("position",position);
                         startActivityForResult(intent, REQUEST_CODE);
                     }
@@ -101,5 +99,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalArgumentException ex) {
             Toast.makeText(MainActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
     }
 }

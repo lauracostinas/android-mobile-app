@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DetailsActivity extends AppCompatActivity {
     EditText nameEditText;
@@ -22,7 +23,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        m = (Movie) getIntent().getSerializableExtra("movie_name");
+        m = (Movie) getIntent().getSerializableExtra("movie");
         pos = (Integer) getIntent().getSerializableExtra("position");
 
         nameEditText = (EditText) findViewById(R.id.nameEditText);
@@ -30,7 +31,7 @@ public class DetailsActivity extends AppCompatActivity {
         genreListText = (TextView) findViewById(R.id.genreListText);
         ImageView imageView = (ImageView) findViewById(R.id.detailsImageView);
         nameEditText.setText(m.getName());
-        yearEditText.setText(m.getYear());
+        yearEditText.setText(String.valueOf(m.getYear()));
         genreListText.setText(m.getGenre().toString());
         imageView.setImageResource(m.getPicture());
 
@@ -38,15 +39,19 @@ public class DetailsActivity extends AppCompatActivity {
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = String.valueOf(nameEditText.getText());
-                Integer year = Integer.valueOf(String.valueOf(yearEditText.getText()));
-                Movie resultMovie = new Movie(name, year, m.getGenre(), m.getPicture());
+                try {
+                    String name = String.valueOf(nameEditText.getText());
+                    Integer year = Integer.valueOf(String.valueOf(yearEditText.getText()));
+                    Movie resultMovie = new Movie(name, year, m.getGenre(), m.getPicture());
 
-                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                intent.putExtra("resultMovie", resultMovie.getName());
-                intent.putExtra("resultPosition", pos);
-                setResult(Activity.RESULT_OK, intent);
-                finish();
+                    Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+                    intent.putExtra("resultMovie", resultMovie);
+                    intent.putExtra("resultPosition", pos);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                } catch (NumberFormatException e) {
+                    Toast.makeText(DetailsActivity.this, "Invalid year", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

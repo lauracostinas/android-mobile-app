@@ -3,13 +3,14 @@ package com.example.laura.myfirstapplication;
 import android.graphics.Picture;
 import android.media.tv.TvContract;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Laura on 31-Oct-17.
  */
 
-public class Movie {
+public class Movie implements Serializable{
     private String name;
     private int year;
     private List<CustomGenres> genre;

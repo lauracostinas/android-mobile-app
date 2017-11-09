@@ -5,33 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.laura.myfirstapplication.DetailsActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="1">
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/nameEditText"
         android:textAlignment="center"/>
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/yearEditText"
         android:textAlignment="center"/>
     <TextView
         android:id="@+id/genreListText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="48dp"
         android:gravity="center"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="155dp"
         android:id="@+id/detailsImageView"
-        app:srcCompat="@drawable/itmoviethumbnail"/>
+        app:srcCompat="@drawable/itmoviethumbnail"
+        android:layout_weight="0.42" />
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="65dp"
         android:id="@+id/submitbutton"
         android:text="Sumbit Edit"/>
 

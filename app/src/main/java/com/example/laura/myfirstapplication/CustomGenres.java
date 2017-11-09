@@ -4,7 +4,7 @@ package com.example.laura.myfirstapplication;
  * Created by Laura on 31-Oct-17.
  */
 
-enum CustomGenres {
+public enum CustomGenres {
     HORROR,
     THRILLER,
     WESTERN,
