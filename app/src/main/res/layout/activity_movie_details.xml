@@ -1,41 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.laura.myfirstapplication.DetailsActivity"
-    android:orientation="vertical"
-    android:weightSum="1">
+    android:weightSum="1"
 
-    <EditText
+    tools:context="com.example.laura.myfirstapplication.DetailsActivity">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nameEditText"
-        android:textAlignment="center"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/yearEditText"
-        android:textAlignment="center"/>
-    <TextView
-        android:id="@+id/genreListText"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:gravity="center"/>
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="155dp"
-        android:id="@+id/detailsImageView"
-        app:srcCompat="@drawable/itmoviethumbnail"
-        android:layout_weight="0.42" />
+        <EditText
+            android:id="@+id/nameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:id="@+id/submitbutton"
-        android:text="Sumbit Edit"/>
+        <EditText
+            android:id="@+id/yearEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/genreListText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center" />
+
+        <ImageView
+            android:id="@+id/detailsImageView"
+            android:layout_width="match_parent"
+            android:layout_height="155dp"
+            android:layout_weight="0.42"
+            app:srcCompat="@drawable/itmoviethumbnail" />
+
+        <Button
+            android:id="@+id/submitbutton"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="Sumbit Edit" />
+
+        <Button
+            android:id="@+id/deletebutton"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:text="Delete" />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_weight="0.44" />
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

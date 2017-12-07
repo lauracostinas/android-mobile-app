@@ -1,23 +1,29 @@
 package com.example.laura.myfirstapplication;
 
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.laura.myfirstapplication.dao.MovieDao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getName();
     public static final int REQUEST_CODE = 1;
+    public static final int ADD_CODE = 2;
     List<Movie> movies = new ArrayList<>();
     ListView listView;
     MovieListAdapter movieListAdapter;
@@ -26,53 +32,74 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeMovieList();
+        Log.i(TAG, "In onCreate");
+
+
 
         listView = (ListView) findViewById(R.id.movielist);
 
-        movieListAdapter = new MovieListAdapter(movies, getLayoutInflater());
-        listView.setAdapter(movieListAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        initializeMovieAdapter();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                intent.putExtra("movie", movies.get(position));
-                intent.putExtra("position", position);
-                startActivityForResult(intent, REQUEST_CODE);
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                startActivityForResult(intent, ADD_CODE);
             }
         });
     }
 
-    private void initializeMovieList() {
-        movies.add(new Movie("IT", 2017, Collections.singletonList(CustomGenres.HORROR), R.drawable.itmoviethumbnail));
-        movies.add(new Movie("Moana", 2017, Arrays.asList(CustomGenres.ANIMATION, CustomGenres.FAMILY), R.drawable.moanamoviethumbnail));
+    private MovieDatabase getDatabase() {
+        return MovieDatabase.getDatabase(getApplicationContext());
+    }
 
+    private void initializeMovieAdapter() {
+        try {
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... params) {
+                    movies.clear();
+                    movies.addAll(getDatabase().movieDao().getAll());
+                    return true;
+                }
+            }.execute().get();
+
+            movieListAdapter = new MovieListAdapter(movies, getLayoutInflater());
+            listView.setAdapter(movieListAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                    intent.putExtra("movie", movies.get(position));
+                    intent.putExtra("position", position);
+                    startActivityForResult(intent, REQUEST_CODE);
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void resetTestData() {
+        movies.clear();
+        movies.add(new Movie("IT", 2017, Collections.singletonList(CustomGenre.HORROR), R.drawable.itmoviethumbnail));
+        movies.add(new Movie("Moana", 2017, Arrays.asList(CustomGenre.ANIMATION, CustomGenre.FAMILY), R.drawable.moanamoviethumbnail));
+
+        MovieDao dao = getDatabase().movieDao();
+        dao.deleteAll();
+        dao.insertAll(movies);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==REQUEST_CODE){
-            if(resultCode==RESULT_OK){
-
-                Movie m = (Movie) data.getSerializableExtra("resultMovie");
-                Integer pos = (Integer) data.getSerializableExtra("resultPosition");
-                movies.set(pos, m);
-
-                MovieListAdapter movieListAdapter = new MovieListAdapter(movies, getLayoutInflater());
-                listView.setAdapter(movieListAdapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent= new Intent(MainActivity.this, DetailsActivity.class);
-                        intent.putExtra("movie",movies.get(position));
-                        intent.putExtra("position",position);
-                        startActivityForResult(intent, REQUEST_CODE);
-                    }
-                });
-            }
-        }
+        initializeMovieAdapter();
     }
 
     @Override

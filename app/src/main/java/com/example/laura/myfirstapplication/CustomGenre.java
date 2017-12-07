@@ -1,10 +1,12 @@
 package com.example.laura.myfirstapplication;
 
+import android.arch.persistence.room.Entity;
+
 /**
  * Created by Laura on 31-Oct-17.
  */
 
-public enum CustomGenres {
+public enum CustomGenre {
     HORROR,
     THRILLER,
     WESTERN,

@@ -1,7 +1,11 @@
 package com.example.laura.myfirstapplication;
 
-import android.graphics.Picture;
-import android.media.tv.TvContract;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,29 +14,49 @@ import java.util.List;
  * Created by Laura on 31-Oct-17.
  */
 
+@Entity(tableName = "movies")
 public class Movie implements Serializable{
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    @ColumnInfo(name="name")
     private String name;
+
+    @ColumnInfo(name="year")
     private int year;
-    private List<CustomGenres> genre;
+
+    @ColumnInfo(name="genre")
+    @TypeConverters(value = EnumConverter.class)
+    private List<CustomGenre> genre;
+
+    @ColumnInfo(name="rating")
     private double rating;
+
+    @ColumnInfo(name="plays")
     private int plays;
+
+    @ColumnInfo(name="picture")
     private int picture;
+
+    @ColumnInfo(name="trailer")
     private String trailerLink;
 
-    public Movie(String name, int year, List<CustomGenres> genre) {
+    @Ignore
+    public Movie(String name, int year, List<CustomGenre> genre) {
         this.name = name;
         this.year = year;
         this.genre = genre;
     }
 
-    public Movie(String name, int year, List<CustomGenres> genre, int picture) {
+    public Movie(String name, int year, List<CustomGenre> genre, int picture) {
         this.name = name;
         this.year = year;
         this.genre = genre;
         this.picture = picture;
     }
 
-    public Movie(String name, int year, List<CustomGenres> genre, double rating, int plays, int picture, String trailerLink) {
+    @Ignore
+    public Movie(String name, int year, List<CustomGenre> genre, double rating, int plays, int picture, String trailerLink) {
         this.name = name;
         this.year = year;
         this.genre = genre;
@@ -40,6 +64,14 @@ public class Movie implements Serializable{
         this.plays = plays;
         this.picture = picture;
         this.trailerLink = trailerLink;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -58,15 +90,15 @@ public class Movie implements Serializable{
         this.year = year;
     }
 
-    public List<CustomGenres> getGenre() {
+    public List<CustomGenre> getGenre() {
         return genre;
     }
 
-    public void setGenre(List<CustomGenres> genre) {
+    public void setGenre(List<CustomGenre> genre) {
         this.genre = genre;
     }
 
-    public void addGenre(CustomGenres genre){
+    public void addGenre(CustomGenre genre){
         this.genre.add(genre);
     }
 
