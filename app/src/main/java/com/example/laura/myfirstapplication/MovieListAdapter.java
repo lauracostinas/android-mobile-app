@@ -42,7 +42,7 @@ class MovieListAdapter extends BaseAdapter{
         convertView = layoutInflater.inflate(R.layout.movie_details_list_item, null);
         ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
         TextView textView = (TextView) convertView.findViewById(R.id.movieNameTextView);
-        imageView.setImageResource(movies.get(position).getPicture());
+        imageView.setImageResource(R.drawable.itmoviethumbnail);
         textView.setText(movies.get(position).getName());
         return convertView;
     }

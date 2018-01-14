@@ -21,6 +21,7 @@ public class AddActivity extends AppCompatActivity {
     private EditText nameEditText;
     private EditText yearEditText;
     private List<CheckBox> checkBoxList = new ArrayList<>();
+    private MovieRepository movieRepository = new MovieRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,25 +48,13 @@ public class AddActivity extends AppCompatActivity {
                     String name = String.valueOf(nameEditText.getText());
                     Integer year = Integer.valueOf(String.valueOf(yearEditText.getText()));
                     List<CustomGenre> genres = new ArrayList<>();
-                    for (CheckBox cb: checkBoxList) {
-                        if(cb.isChecked()) {
+                    for (CheckBox cb : checkBoxList) {
+                        if (cb.isChecked()) {
                             genres.add(CustomGenre.valueOf(cb.getText().toString().replace(" ", "_")));
                         }
                     }
-                    final Movie resultMovie = new Movie(name, year, genres, R.drawable.itmoviethumbnail);
 
-                    try {
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                MovieDatabase.getDatabase(getApplicationContext()).movieDao().insertMovie(resultMovie);
-                                return null;
-                            }
-                        }.execute().get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
+                    movieRepository.addMovie(name, year, genres);
 
                     Intent intent = new Intent(AddActivity.this, MainActivity.class);
                     setResult(Activity.RESULT_OK, intent);

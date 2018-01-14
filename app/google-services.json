@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "858142038835",
+    "firebase_url": "https://movietracker-2315e.firebaseio.com",
+    "project_id": "movietracker-2315e",
+    "storage_bucket": "movietracker-2315e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858142038835:android:e19120b73cbf2f81",
+        "android_client_info": {
+          "package_name": "com.example.laura.myfirstapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858142038835-3rmete5b7l27sap6ivshtv9pgd60e3gt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.laura.myfirstapplication",
+            "certificate_hash": "9398ef93a903578dd8e71d207acf15699f3cefc0"
+          }
+        },
+        {
+          "client_id": "858142038835-kibbga8v4s8ctr98aal91cmacigi1rdu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUZLtDs9s8VpobQZmUrD3vFx7pDNrQCc4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858142038835-kibbga8v4s8ctr98aal91cmacigi1rdu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

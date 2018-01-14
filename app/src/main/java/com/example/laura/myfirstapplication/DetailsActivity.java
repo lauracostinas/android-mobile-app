@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -19,6 +20,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,22 +34,39 @@ public class DetailsActivity extends AppCompatActivity {
     EditText nameEditText;
     EditText yearEditText;
     TextView genreListText;
-    Movie m;
+    Movie movie;
     Integer pos;
+
+    MovieRepository movieRepository = new MovieRepository();
+    UserRepository userRepository = new UserRepository();
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        m = (Movie) getIntent().getSerializableExtra("movie");
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        movie = (Movie) getIntent().getSerializableExtra("movie");
         pos = (Integer) getIntent().getSerializableExtra("position");
 
-        try {
-            PieData data = new AsyncTask<Void, Void, PieData>() {
+        userRepository.isAdmin(firebaseAuth.getCurrentUser().getUid(), new UserRepository.IsAdminCallback() {
+            @Override
+            public void action(boolean isAdmin) {
+                Button button = findViewById(R.id.deletebutton);
+                if(!isAdmin) {
+                    button.setVisibility(View.INVISIBLE);
+                } else {
+                    button.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+            movieRepository.getAll(new MovieRepository.IGetAllMovies() {
                 @Override
-                protected PieData doInBackground(Void... voids) {
-                    List<Movie> movies = MovieDatabase.getDatabase(getApplicationContext()).movieDao().getAll();
+                public void returnMovies(List<Movie> movies) {
                     Map<CustomGenre, Integer> count = new HashMap<>();
                     List<PieEntry> entries = new ArrayList<>();
                     for(Movie movie : movies) {
@@ -68,26 +89,25 @@ public class DetailsActivity extends AppCompatActivity {
                     pds.setDrawValues(false);
                     pds.setColors(ColorTemplate.COLORFUL_COLORS);
 
-                    return new PieData(pds);
+                    PieChart chart = findViewById(R.id.chart);
+                    chart.getDescription().setText("All movies considered");
+                    chart.setData(new PieData(pds));
+                    chart.invalidate();
                 }
-            }.execute().get();
+            });
 
-            PieChart chart = findViewById(R.id.chart);
-            chart.getDescription().setText("All movies considered");
-            chart.setData(data);
-            chart.invalidate();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+
+
+
 
         nameEditText = (EditText) findViewById(R.id.nameEditText);
         yearEditText = (EditText) findViewById(R.id.yearEditText);
         genreListText = (TextView) findViewById(R.id.genreListText);
         ImageView imageView = (ImageView) findViewById(R.id.detailsImageView);
-        nameEditText.setText(m.getName());
-        yearEditText.setText(String.valueOf(m.getYear()));
-        genreListText.setText(m.getGenre().toString());
-        imageView.setImageResource(m.getPicture());
+        nameEditText.setText(movie.getName());
+        yearEditText.setText(String.valueOf(movie.getYear()));
+        genreListText.setText(movie.getGenre().toString());
+        imageView.setImageResource(movie.getPicture());
 
         Button button = (Button) findViewById(R.id.submitbutton);
         button.setOnClickListener(new Button.OnClickListener() {
@@ -97,24 +117,18 @@ public class DetailsActivity extends AppCompatActivity {
                     String name = String.valueOf(nameEditText.getText());
                     Integer year = Integer.valueOf(String.valueOf(yearEditText.getText()));
 
-                    m.setName(name);
-                    m.setYear(year);
+                    movie.setName(name);
+                    movie.setYear(year);
 
-                    try {
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                MovieDatabase.getDatabase(getApplicationContext()).movieDao().updateMovies(m);
-                                return null;
-                            }
-                        }.execute().get();
+                    movieRepository.update(movie, new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        }
+                    });
 
-                        Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                        setResult(Activity.RESULT_OK, intent);
-                        finish();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
                 } catch (NumberFormatException e) {
                     Toast.makeText(DetailsActivity.this, "Invalid year", Toast.LENGTH_SHORT).show();
                 }
@@ -133,21 +147,18 @@ public class DetailsActivity extends AppCompatActivity {
 
                     builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            try {
-                                new AsyncTask<Void, Void, Void>() {
-                                    @Override
-                                    protected Void doInBackground(Void... voids) {
-                                        MovieDatabase.getDatabase(getApplicationContext()).movieDao().delete(m);
-                                        return null;
+                            movieRepository.delete(movie.getId(), new OnCompleteListener() {
+                                @Override
+                                public void onComplete(@NonNull Task task) {
+                                    if(task.isSuccessful()) {
+                                        Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+                                        setResult(Activity.RESULT_OK, intent);
+                                        finish();
                                     }
-                                }.execute().get();
+                                }
+                            });
 
-                                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                                setResult(Activity.RESULT_OK, intent);
-                                finish();
-                            } catch (InterruptedException | ExecutionException e) {
-                                e.printStackTrace();
-                            }
+
                         }
                     });
 
